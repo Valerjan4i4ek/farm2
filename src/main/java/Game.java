@@ -70,35 +70,6 @@ public class Game {
         }
     }
 
-//    public void saveToMySQL(String field, int cash){
-//        try{
-//            String url = "jdbc:mysql://localhost/farm?serverTimezone=Europe/Moscow&useSSL=false";
-//            String username = "root";
-//            String password = "1234";
-//            Class.forName("com.mysql.cj.jdbc.Driver").getDeclaredConstructor().newInstance();
-//            String sql1 = "CREATE TABLE Plants " +
-//                    "(Id INT PRIMARY KEY AUTO_INCREMENT, " +
-//                    "Field VARCHAR(20), Cash INT)";
-//
-//            try (Connection conn = DriverManager.getConnection(url, username, password)){
-//                String sql2 = "INSERT INTO Plants " +
-//                        "(Field, Cash) Values (?, ?)";
-//
-//                Statement statement = conn.createStatement();
-//                statement.executeUpdate(sql1);
-//
-//                PreparedStatement preparedStatement = conn.prepareStatement(sql2);
-//                preparedStatement.setObject(1, field);
-//                preparedStatement.setInt(2, cash);
-//
-//            }
-//        }catch(Exception ex){
-//            System.out.println("Connection failed...");
-//
-//            System.out.println(ex);
-//        }
-//    }
-
     private Optional<Integer> validPlant(String userInput) {
         try{
             Integer number = Integer.valueOf(userInput)-1;
