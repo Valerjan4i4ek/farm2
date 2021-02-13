@@ -1,0 +1,23 @@
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+public class MySQLCache {
+    private Plant plant;
+    private Map<Integer, Plant> cache;
+    MySQLClass sql;
+
+    public MySQLCache(Plant plant){
+        this.cache = new ConcurrentHashMap<>();
+        this.plant = plant;
+        sql = new MySQLClass();
+        init();
+    }
+
+    public void init(){
+        try{
+            cache = sql.loadAll();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+}
