@@ -1,0 +1,128 @@
+import java.sql.*;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+
+public class MySQLClass {
+    private static String DATABASE_CREATE;
+    private static final String DATABASE_NAME = "farm";
+    private static final String TABLE_NAME = "plants";
+    private static String TABLE_CREATE;
+
+    public MySQLClass(){
+        init();
+        checkAndTableCreate();
+    }
+
+    public void init(){
+        DATABASE_CREATE = "CREATE DATABASE IF NOT EXISTS " + DATABASE_NAME + ";";
+
+        TABLE_CREATE = "CREATE TABLE IF NOT EXISTS " + DATABASE_NAME + "." + TABLE_NAME +
+                " (\n" + " Id INT PRIMARY KEY AUTO_INCREMENT,\n" + " 'plantName' VARCHAR(20) NOT NULL,\n" +
+                " 'seedPrice' int(11) NOT NULL,\n" + " 'harvestPrice' int(11) NOT NULL.\n" +
+                " 'time' BIGINT(20) NOT NULL COMMENT '',\n" /*+ "  PRIMARY KEY (`plantName`)*/ + ") " +
+                "ENGINE=MyISAM DEFAULT CHARSET=utf8;";
+    }
+
+    public void checkAndTableCreate(){
+        try{
+            Class.forName("com.mysql.cj.jdbc.Driver").getDeclaredConstructor().newInstance();
+            Connection conn = null;
+            PreparedStatement ps = null;
+            try{
+                conn = getConnection();
+                ps = conn.prepareStatement(DATABASE_CREATE);
+                ps.executeUpdate();
+
+                ps = conn.prepareStatement(TABLE_CREATE);
+                ps.executeUpdate();
+            }
+            finally {
+                conn.close();
+                ps.close();
+            }
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public Connection getConnection() throws SQLException{
+        String url = "jdbc:mysql://localhost/farm?serverTimezone=Europe/Moscow&useSSL=false";
+        String username = "root";
+        String password = "1234";
+
+        return DriverManager.getConnection(url, username, password);
+    }
+
+    public String getTable(){
+        return DATABASE_NAME + TABLE_NAME;
+    }
+
+    public Map<Integer, Plant> loadAll(){
+        Map<Integer, Plant> map = new ConcurrentHashMap<>();
+
+        try{
+            Connection conn = null;
+            PreparedStatement ps = null;
+            ResultSet rs = null;
+
+            try{
+                conn = getConnection();
+                String query = "SELECT * FROM " + getTable();
+                ps = conn.prepareStatement(query);
+                rs = ps.executeQuery();
+
+                Plant plant;
+                while(rs.next()){
+                    try{
+                        int id = rs.getInt("id");
+                        String plantName = rs.getString("plantName");
+                        int seedPrice = rs.getInt("seedPrice");
+                        int harvestPrice = rs.getInt("harvestPrice");
+                        long time = rs.getLong("time");
+                        plant = new Plant(plantName, seedPrice, harvestPrice, time);
+                        map.put(id, plant);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }
+            } finally {
+                conn.close();
+                ps.close();
+                rs.close();
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return map;
+    }
+
+    public boolean addPlant(Plant plant){
+        try{
+            Connection conn = null;
+            PreparedStatement ps = null;
+
+            try{
+                conn = getConnection();
+
+                ps = conn.prepareStatement("INSERT INTO " + getTable() +
+                        "(plantName, seedPrice, harvestPrice, time) VALUES(?, ?, ?, ?)");
+                ps.setString(1, plant.getName());
+                ps.setInt(2, plant.getSeedPrice());
+                ps.setInt(3, plant.getHarvestPrice());
+                ps.setLong(4, plant.getTime());
+
+                return ps.executeUpdate() == 1;
+            } finally {
+                conn.close();
+                ps.close();
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+}
