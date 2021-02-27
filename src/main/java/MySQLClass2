@@ -1,0 +1,54 @@
+import java.lang.reflect.InvocationTargetException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+public class MySQLClass2 {
+
+    public Connection getConnection() throws SQLException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+        String url = "jdbc:mysql://localhost/farm?serverTimezone=Europe/Moscow&useSSL=false";
+        String username = "root";
+        String password = "1234";
+        Class.forName("com.mysql.cj.jdbc.Driver").getDeclaredConstructor().newInstance();
+
+        return DriverManager.getConnection(url, username, password);
+    }
+
+    public void addPlant(Integer field, String plant){
+        try{
+            Connection conn = null;
+            PreparedStatement ps = null;
+
+            try{
+
+                conn = getConnection();
+
+                ps = conn.prepareStatement("INSERT INTO plants" + "(field, plant) VALUES(?, ?)");
+                ps.setInt(1, field);
+                ps.setString(2, plant);
+
+                ps.executeUpdate();
+            } finally {
+                try{
+                    if(conn != null){
+                        conn.close();
+                    }
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+                try{
+                    if(ps != null){
+                        ps.close();
+                    }
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+//                conn.close();
+//                ps.close();
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+}
