@@ -24,6 +24,7 @@ public class Game {
     private final List<Field> fields;
 
     private int cash;
+    public static MySQLClass2 mySQLClass2 = new MySQLClass2();
 
     public static void main(String[] args) throws FileNotFoundException {
         List<Plant> plantList = jsonToPlants(JSON_FILE_NAME);
@@ -60,11 +61,12 @@ public class Game {
                         execute(() -> getHarvest(fieldNumber), plant.getTime());
                         cash -= plant.getSeedPrice();
                         fields.set(fieldNumber, field.updateField(plant));
-
+                        mySQLClass2.addPlant(fieldNumber, plant.getName());
                     });
                 } else {
                     cash += field.getHarvestPrice();
                     fields.set(fieldNumber, field.updateField());
+                    mySQLClass2.addPlant(fieldNumber, "stalo pusto");
                 }
             });
         }
