@@ -14,6 +14,41 @@ public class MySQLClass2 {
 
         return DriverManager.getConnection(url, username, password);
     }
+    
+    public void tableCreate(){
+        try{
+            Connection conn = null;
+            PreparedStatement ps = null;
+
+            try{
+                conn = getConnection();
+                ps = conn.prepareStatement("CREATE TABLE plants " +
+                        "(field INT NOT NULL, plant VARCHAR(20) NOT NULL)");
+            }
+            finally {
+                try{
+                    if(conn != null){
+                        conn.close();
+                    }
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+                try{
+                    if(ps != null){
+                        ps.close();
+                    }
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+//                conn.close();
+//                ps.close();
+            }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
 
     public void addPlant(Integer field, String plant){
         try{
