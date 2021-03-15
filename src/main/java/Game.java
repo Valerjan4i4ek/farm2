@@ -25,6 +25,7 @@ public class Game {
 
     private int cash;
     public static MySQLClass2 mySQLClass2 = new MySQLClass2();
+    public MySQLCache cache;
 
     public static void main(String[] args) throws FileNotFoundException {
         List<Plant> plantList = jsonToPlants(JSON_FILE_NAME);
@@ -45,6 +46,7 @@ public class Game {
         this.scanner = new Scanner(System.in);
         this.fields = new CopyOnWriteArrayList<>();
         for (int i = 0; i < fieldSize; i++) fields.add(new Field());
+        cache = new MySQLCache();
     }
 
     public void start() {
