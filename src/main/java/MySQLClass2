@@ -1,5 +1,10 @@
+import com.mysql.cj.x.protobuf.MysqlxDatatypes;
+
+import javax.sql.rowset.CachedRowSet;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.*;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class MySQLClass2 {
 
@@ -25,7 +30,7 @@ public class MySQLClass2 {
             try{
                 conn = getConnection(null);
                 st = conn.createStatement();
-                st.executeUpdate("CREATE DATABASE farm");
+                st.executeUpdate("CREATE DATABASE IF NOT EXISTS farm");
             }
             finally {
                 try{
@@ -58,7 +63,7 @@ public class MySQLClass2 {
             try{
                 conn = getConnection("farm");
                 st = conn.createStatement();
-                st.executeUpdate("CREATE TABLE farm.plants " +
+                st.executeUpdate("CREATE TABLE IF NOT EXISTS farm.plants " +
                         "(field INT NOT NULL, plant VARCHAR(20) NOT NULL)");
             }
             finally {
@@ -84,7 +89,6 @@ public class MySQLClass2 {
         }
     }
 
-
     public void addPlant(Integer field, String plant){
         try{
             Connection conn = null;
@@ -97,8 +101,8 @@ public class MySQLClass2 {
                 ps = conn.prepareStatement("INSERT INTO plants" + "(field, plant) VALUES(?, ?)");
                 ps.setInt(1, field);
                 ps.setString(2, plant);
-
                 ps.executeUpdate();
+
             } finally {
                 try{
                     if(conn != null){
@@ -118,5 +122,57 @@ public class MySQLClass2 {
         } catch (Exception e){
             e.printStackTrace();
         }
+    }
+    public Map<Integer, String> cache(){
+        Map<Integer, String> map = new ConcurrentHashMap<>();
+
+        try{
+            Connection conn = null;
+            PreparedStatement ps = null;
+            ResultSet rs = null;
+
+            try{
+                conn = getConnection("farm");
+                String query = "SELECT * FROM plants";
+                ps = conn.prepareStatement(query);
+                rs = ps.executeQuery();
+
+                while (rs.next()){
+                    try{
+                        int field = rs.getInt("field");
+                        String plant = rs.getString("plant");
+                        map.put(field, plant);
+                    } catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }
+            } finally {
+                try{
+                    if(conn != null){
+                        conn.close();
+                    }
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+                try{
+                    if(ps != null){
+                        ps.close();
+                    }
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+                try{
+                    if(rs != null){
+                        rs.close();
+                    }
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return map;
     }
 }
