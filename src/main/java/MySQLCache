@@ -2,20 +2,23 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class MySQLCache {
-    private Plant plant;
-    private Map<Integer, Plant> cache;
-    MySQLClass sql;
+    private Map<Integer, String> cache;
+    MySQLClass2 sql;
 
-    public MySQLCache(Plant plant){
+    public MySQLCache(){
         this.cache = new ConcurrentHashMap<>();
-        this.plant = plant;
-        sql = new MySQLClass();
+        sql = new MySQLClass2();
         init();
     }
 
     public void init(){
         try{
-            cache = sql.loadAll();
+            cache = sql.cache();
+            if(cache != null && !cache.isEmpty()){
+                for(Map.Entry<Integer, String> entry : cache.entrySet()){
+                    System.out.println(entry.getKey() + " " + entry.getValue());
+                }
+            }
         } catch (Exception e){
             e.printStackTrace();
         }
