@@ -1,10 +1,6 @@
 import com.google.gson.Gson;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.Statement;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
@@ -24,13 +20,13 @@ public class Game {
     private final List<Field> fields;
 
     private int cash;
-    public static MySQLClass2 mySQLClass2 = new MySQLClass2();
+    //public static MySQLClass2 mySQLClass2 = new MySQLClass2();
     public MySQLCache cache;
 
     public static void main(String[] args) throws FileNotFoundException {
         List<Plant> plantList = jsonToPlants(JSON_FILE_NAME);
         for (int i = 0; i < plantList.size(); i++) {
-            out.println((i+1) + " " + plantList.get(i));
+            out.println((i + 1) + " " + plantList.get(i));
         }
 
         new Game(jsonToPlants(JSON_FILE_NAME), 100, 8).start();
@@ -63,12 +59,12 @@ public class Game {
                         execute(() -> getHarvest(fieldNumber), plant.getTime());
                         cash -= plant.getSeedPrice();
                         fields.set(fieldNumber, field.updateField(plant));
-                        mySQLClass2.addPlant(fieldNumber, plant.getName());
+                        cache.addPlant(fieldNumber, plant.getName());
                     });
                 } else {
                     cash += field.getHarvestPrice();
                     fields.set(fieldNumber, field.updateField());
-                    mySQLClass2.addPlant(fieldNumber, "stalo pusto");
+                    cache.addPlant(fieldNumber, "stalo pusto");
                 }
             });
         }
