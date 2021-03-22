@@ -8,19 +8,10 @@ public class MySQLCache {
     public MySQLCache(){
         this.cache = new ConcurrentHashMap<>();
         sql = new MySQLClass2();
-        init();
     }
 
-    public void init(){
-        try{
-            cache = sql.cache();
-            if(cache != null && !cache.isEmpty()){
-                for(Map.Entry<Integer, String> entry : cache.entrySet()){
-                    System.out.println(entry.getKey() + " " + entry.getValue());
-                }
-            }
-        } catch (Exception e){
-            e.printStackTrace();
-        }
+    public void addPlant(Integer field, String plant){
+        cache.put(field, plant);
+        sql.addPlant(field, plant);
     }
 }
