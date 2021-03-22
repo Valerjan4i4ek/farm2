@@ -19,11 +19,7 @@ public class MySQLCache {
     public void init(){
         try{
             cache = sql.loadAll();
-            if(cache != null && !cache.isEmpty()){
-                for(Map.Entry<Integer, String> entry : cache.entrySet()){
-                    System.out.println(entry.getKey() + " " + entry.getValue());
-                }
-            }
+            
         } catch (Exception e){
             e.printStackTrace();
         }
